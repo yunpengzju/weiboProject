@@ -32,39 +32,45 @@ def access_token_test():
     oauth.set_app_key_secret(APP_KEY, APP_SECRET, CALLBACK_URL)
     print oauth.get_access_token_url()
 
+def timestamp_datetime(value):
+    format = '%Y-%m-%d %H:%M:%S'
+    # value为传入的值为时间戳(整形)，如：1332888820
+    value = time.localtime(value)
+    ## 经过localtime转换后变成
+    ## time.struct_time(tm_year=2012, tm_mon=3, tm_mday=28, tm_hour=6, tm_min=53, tm_sec=40, tm_wday=2, tm_yday=88, tm_isdst=0)
+    # 最后再经过strftime函数转换为正常日期格式。
+    dt = time.strftime(format, value)
+    return dt
+
 def tweibo_test():
 	oauth = OAuth2Handler()
 	oauth.set_app_key_secret(APP_KEY, APP_SECRET, CALLBACK_URL)
 	oauth.set_access_token(ACCESS_TOKEN)
 	oauth.set_openid(OPENID)
 	api = API(oauth)
-	lo = 120
-	la = 30
-	search = []
-	for page in range(1,10):
-		temp = api.get.search__t(format="json", keyword="公益", pagesize = 30,page = page,contenttype = 0,sorttype = 0, msgtype = 1, searchtype = 8,starttime = 0, endtime = 0)
+	lo = 123.1011
+	la = 31.1012
+	search = []	
+	try:
+		temp = api.post.lbs__get_around_new(format="json",longitude = lo,latitude = la, pagesize = 25)
+		page_ret = temp.data.pageinfo
 		search.append(temp)
-	
+	except:
+		print("No data")
+	for page in range(1,10):
+		try:
+			temp = api.post.lbs__get_around_new(format="json", longitude = lo,latitude = la, pageinfo = page_ret, pagesize = 25 )
+			page_ret = temp.data.pageinfo
+			search.append(temp)
+		except:
+			print(" No next page")
 	try:
 		for page in search:
 			for idx, tweet in enumerate(page.data.info):
-				print "[%d], [%s],  %s" % (idx+1, tweet.location, tweet.text)
-				print tweet.latitude
+				print "[%d], [%s],(%s),  %s" % (idx+1, tweet.location,timestamp_datetime(tweet.timestamp), tweet.text)
 	except:
 		pass
-# 	print "state:  %d  message: %s" % (search.ret,search.msg)
 
-
-# 	for lo in range(100,120):
-# 		for la in range(30,50):
-# 			search = api.get.search__t(format="json", keyword="天气", pagesize = 20,page = 1, longitude = lo, latitude = la, radius = 20000)
-# 			print "state:  %d  message: %s" % (search.ret,search.msg)
-# 			try:
-# 				for idx, tweet in enumerate(search.data.info):
-# 					print "[%d], %s" % (idx+1, tweet.text)
-# 			except:
-# 				pass
-# 	tweet = api.post.t__add(format="json", content="天气", clientip="10.0.0.1", longitude = 120, latitude = 30)
 # 	print(tweet.ret)
     #api = API(oauth, host="127.0.0.1", port=8888)       # Init API() with proxy
 	
