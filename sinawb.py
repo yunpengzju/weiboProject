@@ -2,13 +2,13 @@
 #! /usr/bin/env python
 from weibo import APIClient
 
-APP_KEY = '2861702996'            # app key
+APP_KEY = '2861702996'                               # app key
 APP_SECRET = '0bb109636d9aaa9e5d6ba6fbbea42eff'      # app secret
-CALLBACK_URL = 'https://github.com'  # callback url
+CALLBACK_URL = 'https://github.com'                  # callback url
 
-CODE = '6331e3b0a26eddca75b56df628d3c6d9'  # 从访问callback_url时获得的code，用于获取acess_token
+CODE = '6331e3b0a26eddca75b56df628d3c6d9'            # 从访问callback_url时获得的code，用于获取acess_token
 
-ACCESS_TOKEN = '2.009lLIGEwf6fHD554ef1df6a3BpjPD'			# 和expires_in一起，七天内有效
+ACCESS_TOKEN = '2.009lLIGEwf6fHD554ef1df6a3BpjPD'	 # 和expires_in一起，七天内有效
 EXPIRES_IN = '1536915491'
 
 # 以下两个常量用于测试特定时间段的微博信息
@@ -42,12 +42,26 @@ def use_api():
 	client.set_access_token(ACCESS_TOKEN, EXPIRES_IN)
 
 	results = []
+	lines = ""
 	for page_num in range(1,10):		# 获取前10页结果
 		temp = client.place.nearby_timeline.get(long = LONG, lat = LAT, page = page_num, starttime = START_TIME, endtime = END_TIME)
 		results.append(temp)
 	for result in results:
 		for id, weibo in enumerate(result.statuses):
 			print "%d, %s  " % (id,weibo.text)
+			lines += weibo.text
+	import jieba
+	seg_list = jieba.cut(lines, cut_all=False)
+	words = []
+	for word in seg_list:
+		words += [word]
+	
+	import nltk
+	print "高频词："
+	freq = nltk.FreqDist(words)
+	t = freq.keys()[:50]
+	for word in t:
+		print word
 if __name__ == '__main__':
 	#get_url()
     #get_access_token()
