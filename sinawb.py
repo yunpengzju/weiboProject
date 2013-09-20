@@ -1,6 +1,8 @@
 # -*- coding:utf-8 -*- #
 #! /usr/bin/env python
 from weibo import APIClient
+import jieba
+import nltk
 
 APP_KEY = '2861702996'                               # app key
 APP_SECRET = '0bb109636d9aaa9e5d6ba6fbbea42eff'      # app secret
@@ -43,25 +45,49 @@ def use_api():
 
 	results = []
 	lines = ""
-	for page_num in range(1,10):		# 获取前10页结果
+	for page_num in range(1,20):		# 获取前10页结果
 		temp = client.place.nearby_timeline.get(long = LONG, lat = LAT, page = page_num, starttime = START_TIME, endtime = END_TIME)
 		results.append(temp)
-	for result in results:
-		for id, weibo in enumerate(result.statuses):
-			print "%d, %s  " % (id,weibo.text)
-			lines += weibo.text
-	import jieba
-	seg_list = jieba.cut(lines, cut_all=False)
-	words = []
-	for word in seg_list:
-		words += [word]
+	weibos = preProcess(results)
+	for id, weibo in enumerate(weibos):
+		print "%d, %s  " % (id,weibo.text)
+		lines += weibo.text
+	fenci(lines)
 	
-	import nltk
+# 以下函数对返回的多页微博信息进行统一筛选处理
+def preProcess(lists):
+	weibos = []
+	for list in lists:
+		for weibo in list.statuses:
+			if isUseful(weibo.text):
+				weibos += [weibo]
+# 	for id, weibo in enumerate(weibos):			# for test
+# 		print "%d, %s  " % (id,weibo.text)
+	return weibos	
+
+def isUseful(text):
+	KEYWORDS = ["雨","雷","水","海","淹"]
+	for key in KEYWORDS:
+		if key in text.encode('utf-8'):
+			return True
+	return False
+	
+	
+#以下程序试对抓取到的微博做分词处理
+def fenci(str = ""):
+	words     = []
+	seg_list  = jieba.cut(str, cut_all=False)
+	
+	for word in seg_list:
+		if len(word) > 1:
+			words += [word]
 	print "高频词："
 	freq = nltk.FreqDist(words)
-	t = freq.keys()[:50]
+	t = freq.keys()[:70]
 	for word in t:
 		print word
+		
+	
 if __name__ == '__main__':
 	#get_url()
     #get_access_token()
