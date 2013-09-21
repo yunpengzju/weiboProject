@@ -67,9 +67,11 @@ def preProcess(lists):
 
 def isUseful(text):
 	KEYWORDS = ["雨","雷","水","海","淹"]
+	KEY2 = ["深","涨"]
 	for key in KEYWORDS:
 		if key in text.encode('utf-8'):
-			return True
+			if key in KEY2:
+				return True
 	return False
 	
 	
