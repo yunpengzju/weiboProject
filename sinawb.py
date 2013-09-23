@@ -8,10 +8,10 @@ APP_KEY = '2861702996'                               # app key
 APP_SECRET = '0bb109636d9aaa9e5d6ba6fbbea42eff'      # app secret
 CALLBACK_URL = 'https://github.com'                  # callback url
 
-CODE = '6331e3b0a26eddca75b56df628d3c6d9'            # 从访问callback_url时获得的code，用于获取acess_token
+CODE = '8716fdd98041882a87d6c144bf47a4d1'            # 从访问callback_url时获得的code，用于获取acess_token
 
 ACCESS_TOKEN = '2.009lLIGEwf6fHD554ef1df6a3BpjPD'	 # 和expires_in一起，七天内有效
-EXPIRES_IN = '1536915491'
+EXPIRES_IN = '1537535161'
 
 # 以下两个常量用于测试特定时间段的微博信息
 START_TIME =  1379064600        # 2013.9.13 杭州大暴雨
@@ -70,8 +70,7 @@ def isUseful(text):
 	KEY2 = ["深","涨"]
 	for key in KEYWORDS:
 		if key in text.encode('utf-8'):
-			if key in KEY2:
-				return True
+			return True
 	return False
 	
 	
